@@ -20,9 +20,12 @@ RSpec.describe Homebrew::Cmd::Outdated do
       }],
       casks:    [],
     })
+    # json v2.8.1 is inconsistent it how it renders empty arrays,
+    # for now we allow multiple outputs:
+    alternate_json = expected_json.gsub("[]", "[\n\n]")
 
     expect { brew "outdated", "--json=v2" }
-      .to output("#{expected_json}\n").to_stdout
+      .to output(eq("#{expected_json}\n").or(eq("#{alternate_json}\n"))).to_stdout
       .and be_a_success
   end
 end
